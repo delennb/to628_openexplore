@@ -1,0 +1,83 @@
+---
+title: "CarInsurance"
+author: "CW"
+date: "2024-04-02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load Libraries
+
+```{r}
+library(caret)
+```
+
+## Load and Clean Data
+
+```{r}
+carinsurance <- read.csv("Car_Insurance_Claim.csv")
+carinsurance$X <- NULL
+carinsurance$ID <- NULL
+carinsurance$AGE <- as.factor(carinsurance$AGE)
+carinsurance$GENDER <- as.factor(carinsurance$GENDER)
+carinsurance$RACE <- as.factor(carinsurance$RACE)
+carinsurance$DRIVING_EXPERIENCE <- as.factor(carinsurance$DRIVING_EXPERIENCE)
+carinsurance$EDUCATION <- as.factor(carinsurance$EDUCATION)
+carinsurance$INCOME <- as.factor(carinsurance$INCOME)
+carinsurance$VEHICLE_OWNERSHIP <- as.factor(carinsurance$VEHICLE_OWNERSHIP)
+carinsurance$VEHICLE_YEAR <- as.factor(carinsurance$VEHICLE_YEAR)
+carinsurance$MARRIED <- as.factor(carinsurance$MARRIED)
+carinsurance$CHILDREN <- as.factor(carinsurance$CHILDREN)
+carinsurance$POSTAL_CODE <- as.factor(carinsurance$POSTAL_CODE)
+carinsurance$VEHICLE_TYPE <- as.factor(carinsurance$VEHICLE_TYPE)
+carinsurance$OUTCOME <- as.factor(carinsurance$OUTCOME)
+
+str(carinsurance)
+summary(carinsurance)
+
+```
+
+## Split Data into Test and Train
+
+```{r}
+train_ratio <- 0.7
+set.seed(12345)
+train_rows <- sample(1:nrow(carinsurance), train_ratio*nrow(carinsurance))
+
+carinsurance_train <- carinsurance[train_rows, ]
+carinsurance_test <- carinsurance[-train_rows, ]
+```
+
+## Build Model (LN)
+
+```{r}
+simplemodel <- glm(OUTCOME ~ ., data = carinsurance_train, family = "binomial")
+summary(simplemodel)
+```
+
+## Make predictions on test data 
+
+```{r}
+testpred <- predict(simplemodel, newdata = carinsurance_test, type = "response")
+summary(testpred)
+binpred <- ifelse(testpred >= 0.5, 1, 0)
+```
+
+## Evaluate predictions
+
+```{r}
+confusionMatrix(as.factor(binpred), as.factor(carinsurance_test$OUTCOME), positive = "1") 
+```
+
+## NOTES:
+
+```{r}
+# 
+# The question: Can you predict whether a customer claims their loan based on this dataset?
+#
+# Here, we ran a preliminary simple logistic regression to see whether this data set has any explanatory power. The model has an accuracy of 84.25% and a kappa of 63.02%, indicating the data has predictive power. We look forward to improving the accuracy of our predictions with a stacked model.
+#
+```
