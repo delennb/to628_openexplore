@@ -1,0 +1,51 @@
+---
+title: "SVM"
+author: "Delenn Bauer"
+date: "2024-04-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## SVM
+
+### Load Libraries and Data
+
+```{r}
+library(kernlab)
+library(caret)
+
+svm_train <- read.csv("carinsurance_train.csv")
+svm_test <- read.csv("carinsurance_test.csv")
+
+summary(svm_train)
+```
+
+### Build Models
+```{r, cache=TRUE}
+svm1 <- ksvm(OUTCOME1 ~ ., data = svm_train, kernel = "vanilladot")
+```
+
+```{r, cache=TRUE}
+svm2 <- ksvm(OUTCOME1 ~ ., data = svm_train, kernel = "rbfdot")
+# help("ksvm)
+```
+
+```{r, cache=TRUE}
+svmpred1 <- predict(svm1, svm_test)
+svmpred2 <- predict(svm2, svm_test)
+
+summary(svmpred2)
+```
+
+
+```{r, cache=TRUE}
+svmpredbin <- ifelse(svmpred2 >= 0.5, 1, 0)
+
+svm_cm <- confusionMatrix(as.factor(svmpredbin), as.factor(svm_test$OUTCOME1), positive = "1")
+svm_cm
+
+write.csv(svmpred2, "svm_pred.csv", row.names = FALSE)
+```

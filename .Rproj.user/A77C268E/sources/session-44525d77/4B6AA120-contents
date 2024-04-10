@@ -1,0 +1,51 @@
+---
+title: "RF"
+author: "Delenn Bauer"
+date: "2024-04-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## RF
+
+### Load Data and Libraries
+
+```{r}
+library(randomForest)
+library(caret)
+
+rf_train <- read.csv("carinsurance_train.csv")
+rf_test <- read.csv("carinsurance_test.csv")
+
+str(rf_train)
+summary(rf_train)
+```
+### Build Model
+
+```{r, cache=TRUE}
+set.seed(12345)
+rfModel <- randomForest(as.factor(OUTCOME1) ~ ., data = rf_train)
+
+summary(rfModel)
+```
+
+```{r, cache=TRUE}
+randomForest::varImpPlot(rfModel)
+```
+
+
+### Predict and Export Prediction
+```{r, cache=TRUE}
+rfPred <- predict(rfModel, rf_test)
+summary(rfPred)
+```
+
+```{r, cache=TRUE}
+rf_cm <- confusionMatrix(as.factor(rfPred), as.factor(rf_test$OUTCOME1), positive = "1")
+rf_cm
+
+write.csv(rfPred, "rf_pred.csv", row.names = FALSE)
+```
