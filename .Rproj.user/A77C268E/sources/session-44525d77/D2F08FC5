@@ -1,26 +1,26 @@
 {
-    "id": "EB2099B4",
-    "path": "C:/DelennFiles/W24/TO628/FinalProject/CarInsurance.Rmd",
-    "project_path": "CarInsurance.Rmd",
+    "id": "D2F08FC5",
+    "path": "C:/DelennFiles/W24/TO628/FinalProject/DataLoadAndClean.Rmd",
+    "project_path": "DataLoadAndClean.Rmd",
     "type": "r_markdown",
     "hash": "0",
     "contents": "",
     "dirty": false,
-    "created": 1712187596510.0,
+    "created": 1712735689076.0,
     "source_on_save": false,
-    "relative_order": 1,
+    "relative_order": 8,
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "56,0",
-        "scrollLine": "28"
+        "cursorPosition": "81,9",
+        "scrollLine": "56"
     },
     "folds": "",
-    "lastKnownWriteTime": 1712170888,
+    "lastKnownWriteTime": 1712735582,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1712170888,
+    "last_content_update": 1712735582,
     "read_only": false,
     "read_only_alternatives": []
 }
