@@ -42,7 +42,7 @@ summary(rf)
 carinsurance_test <- read.csv("carinsurance_test.csv")
 
 carinsurance_combined <- data.frame(lr$x, knn$x, ann$V1, dt$x, svm$V1, rf$x, carinsurance_test$OUTCOME1)
-summary(tele_combined)
+summary(carinsurance_combined)
 
 ```
 
@@ -67,7 +67,7 @@ plot(model_2)
 
 ### Error Cost
 ```{r, cache=TRUE}
-cost_matrix <- matrix(c(0,1,5,-5), nrow = 2) # NEED TO UPDATE COST MATRIX
+cost_matrix <- matrix(c(0,2,3,0), nrow = 2) # NEED TO UPDATE COST MATRIX
 cost_matrix
 
 cost_model <-  C5.0(as.factor(carinsurance_test.OUTCOME1) ~ ., data = train_2, costs = cost_matrix)
@@ -98,19 +98,19 @@ comb_kappa<- comb_cm$overall["Kappa"]
 cost_profit <- 6*(TPcost) - (TPcost + FPcost) # NEED TO UPDATE PROFIT WITH METRIC WE ARE USING FOR COST MATRIX
 cost_kappa<- cost_cm$overall["Kappa"]
 
-comb_profit # NEED TO UPDATE PROFIT WITH METRIC WE ARE USING FOR COST MATRIX
-comb_kappa
-
-cost_profit # NEED TO UPDATE PROFIT WITH METRIC WE ARE USING FOR COST MATRIX
-cost_kappa
+# comb_profit # NEED TO UPDATE PROFIT WITH METRIC WE ARE USING FOR COST MATRIX
+# comb_kappa
+# 
+# cost_profit # NEED TO UPDATE PROFIT WITH METRIC WE ARE USING FOR COST MATRIX
+# cost_kappa
 ```
 
 ## Summary of Model Performance
 ```{r}
 modeldata <- data.frame(
   Model = c("Stacked Cost", "Stacked", "LR", "KNN", "ANN", "DT", "RF", "SVM"),
-  Profit = c(cost_profit, comb_profit, 2466, 1690, 2847, 2687, 2819, 2245), # NEED TO UPDATE VALUES
-  Kappa = c(round(cost_kappa, digits = 4), round(comb_kappa, digits = 4), 0.3074, 0.2276, 0.3379, 0.3255, 0.3339, 0.2855) # NEED TO UPDATE VALUES
+  Profit = c(cost_profit, comb_profit, 0, 0, 0, 0, 0, 0), # NEED TO UPDATE VALUES
+  Kappa = c(round(cost_kappa, digits = 4), round(comb_kappa, digits = 4), 0.6392, 0.5322, 0.6529, 0.6529, 0.6368, 0.5958) # NEED TO UPDATE VALUES
 )
 
 modeldata
