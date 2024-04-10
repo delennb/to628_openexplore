@@ -1,0 +1,9 @@
+ggplot2
+lattice
+caret
+neuralnet
+C50
+foreach
+iterators
+doParallel
+class
