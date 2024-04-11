@@ -69,3 +69,17 @@ write.csv(lr_pred, "lr_pred.csv", row.names = FALSE)
 # write.csv(lr_pred_step, "lr_pred_step.csv", row.names = FALSE)
 ```
 
+```{r, cache=TRUE}
+TN <- lr_cm$table[1,1]
+FN <- lr_cm$table[1,2]
+FP <- lr_cm$table[2,1]
+TP <- lr_cm$table[2,2]
+
+# Profit
+lr_profit <- 5000*TP - 500*FP
+lr_kappa <- lr_cm$overall["Kappa"]
+
+lr_profit
+lr_kappa
+```
+

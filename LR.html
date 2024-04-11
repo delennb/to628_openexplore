@@ -547,6 +547,20 @@ lr_cm</code></pre>
 # Write to file
 write.csv(lr_pred, &quot;lr_pred.csv&quot;, row.names = FALSE)
 # write.csv(lr_pred_step, &quot;lr_pred_step.csv&quot;, row.names = FALSE)</code></pre>
+<pre class="r"><code>TN &lt;- lr_cm$table[1,1]
+FN &lt;- lr_cm$table[1,2]
+FP &lt;- lr_cm$table[2,1]
+TP &lt;- lr_cm$table[2,2]
+
+# Profit
+lr_profit &lt;- 5000*TP - 500*FP
+lr_kappa &lt;- lr_cm$overall[&quot;Kappa&quot;]
+
+lr_profit</code></pre>
+<pre><code>## [1] 2694000</code></pre>
+<pre class="r"><code>lr_kappa</code></pre>
+<pre><code>##     Kappa 
+## 0.6391738</code></pre>
 </div>
 </div>
 

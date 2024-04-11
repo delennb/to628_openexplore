@@ -470,6 +470,20 @@ knn_cm</code></pre>
 ##        &#39;Positive&#39; Class : 1               
 ## </code></pre>
 <pre class="r"><code>write.csv(attributes(knn_pred)$prob, &quot;knn_pred.csv&quot;, row.names = FALSE)</code></pre>
+<pre class="r"><code>TN &lt;- knn_cm$table[1,1]
+FN &lt;- knn_cm$table[1,2]
+FP &lt;- knn_cm$table[2,1]
+TP &lt;- knn_cm$table[2,2]
+
+# Profit
+knn_profit &lt;- 5000*TP - 500*FP
+knn_kappa &lt;- knn_cm$overall[&quot;Kappa&quot;]
+
+knn_profit</code></pre>
+<pre><code>## [1] 2151000</code></pre>
+<pre class="r"><code>knn_kappa</code></pre>
+<pre><code>##     Kappa 
+## 0.5322007</code></pre>
 </div>
 </div>
 

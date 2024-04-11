@@ -473,6 +473,20 @@ svm_cm</code></pre>
 ##        &#39;Positive&#39; Class : 1               
 ## </code></pre>
 <pre class="r"><code>write.csv(svmpred2, &quot;svm_pred.csv&quot;, row.names = FALSE)</code></pre>
+<pre class="r"><code>TN &lt;- svm_cm$table[1,1]
+FN &lt;- svm_cm$table[1,2]
+FP &lt;- svm_cm$table[2,1]
+TP &lt;- svm_cm$table[2,2]
+
+# Profit
+svm_profit &lt;- 5000*TP - 500*FP
+svm_kappa &lt;- svm_cm$overall[&quot;Kappa&quot;]
+
+svm_profit</code></pre>
+<pre><code>## [1] 2512000</code></pre>
+<pre class="r"><code>svm_kappa</code></pre>
+<pre><code>##     Kappa 
+## 0.5958071</code></pre>
 </div>
 </div>
 

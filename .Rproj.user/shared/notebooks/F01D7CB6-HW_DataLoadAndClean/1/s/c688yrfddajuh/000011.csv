@@ -1,4 +1,0 @@
-"0","write.csv(carinsurance_train_ann, ""carinsurance_train_ann.csv"", row.names = FALSE)
-"
-"2","Error in eval(expr, p) : object 'carinsurance_train_ann' not found
-"

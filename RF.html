@@ -521,6 +521,20 @@ rf_cm</code></pre>
 ##        &#39;Positive&#39; Class : 1             
 ## </code></pre>
 <pre class="r"><code>write.csv(rfPred, &quot;rf_pred.csv&quot;, row.names = FALSE)</code></pre>
+<pre class="r"><code>TN &lt;- rf_cm$table[1,1]
+FN &lt;- rf_cm$table[1,2]
+FP &lt;- rf_cm$table[2,1]
+TP &lt;- rf_cm$table[2,2]
+
+# Profit
+rf_profit &lt;- 5000*TP - 500*FP
+rf_kappa &lt;- rf_cm$overall[&quot;Kappa&quot;]
+
+rf_profit</code></pre>
+<pre><code>## [1] 2736000</code></pre>
+<pre class="r"><code>rf_kappa</code></pre>
+<pre><code>##     Kappa 
+## 0.6367809</code></pre>
 </div>
 </div>
 

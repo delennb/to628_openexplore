@@ -49,7 +49,7 @@ summary(carinsurance_combined)
 ### Build Model
 
 ```{r, cache=TRUE}
-train_ratio <- 0.5
+train_ratio <- 0.7
 set.seed(12345)
 train_rows <- sample(1:nrow(carinsurance_combined), train_ratio*nrow(carinsurance_combined))
 
@@ -61,6 +61,7 @@ model_2 <- C5.0(as.factor(carinsurance_test.OUTCOME1) ~ ., data = train_2)
 pred_2 <- predict(model_2, test_2)
 
 comb_cm <- confusionMatrix(as.factor(pred_2), as.factor(test_2$carinsurance_test.OUTCOME1), positive = "1")
+comb_cm
 
 plot(model_2)
 ```
@@ -68,6 +69,11 @@ plot(model_2)
 ### Error Cost
 ```{r, cache=TRUE}
 cost_matrix <- matrix(c(0,2,3,0), nrow = 2) # NEED TO UPDATE COST MATRIX
+
+# False Positives (FP): If we predict a customer will file a claim, but they don't, the cost to the company is the additional resources spent on investigating and monitoring that customer. We assume around $500 per FP.
+# False Negatives (FN): If we fail to predict a claim, and the customer does file one, the cost is the actual claim payout. Based on industry data, the average car insurance claim payout is about $5,000.
+
+# cost_matrix <- matrix(c(0, 5000, 500, 0), nrow = 2) 
 cost_matrix
 
 cost_model <-  C5.0(as.factor(carinsurance_test.OUTCOME1) ~ ., data = train_2, costs = cost_matrix)
@@ -77,6 +83,7 @@ plot(cost_model)
 pred_cost<- predict(cost_model, test_2)
 
 cost_cm <- confusionMatrix(as.factor(pred_cost), as.factor(test_2$carinsurance_test.OUTCOME1), positive = "1")
+cost_cm
 ```
 
 ### Profit
@@ -92,26 +99,35 @@ FPcost <- cost_cm$table[2,1]
 TPcost <- cost_cm$table[2,2]
 
 # Profit
-comb_profit <- 6*(TP) - (TP + FP) # NEED TO UPDATE PROFIT WITH METRIC WE ARE USING FOR COST MATRIX
-comb_kappa<- comb_cm$overall["Kappa"]
+comb_profit <- 5000*TP - 500*FP
+comb_kappa <- comb_cm$overall["Kappa"]
 
-cost_profit <- 6*(TPcost) - (TPcost + FPcost) # NEED TO UPDATE PROFIT WITH METRIC WE ARE USING FOR COST MATRIX
-cost_kappa<- cost_cm$overall["Kappa"]
+cost_profit <- 5000*TPcost - 500*FPcost
+cost_kappa <- cost_cm$overall["Kappa"]
 
-# comb_profit # NEED TO UPDATE PROFIT WITH METRIC WE ARE USING FOR COST MATRIX
-# comb_kappa
-# 
-# cost_profit # NEED TO UPDATE PROFIT WITH METRIC WE ARE USING FOR COST MATRIX
-# cost_kappa
+comb_profit
+comb_kappa
+
+cost_profit
+cost_kappa
 ```
 
 ## Summary of Model Performance
 ```{r}
 modeldata <- data.frame(
   Model = c("Stacked Cost", "Stacked", "LR", "KNN", "ANN", "DT", "RF", "SVM"),
-  Profit = c(cost_profit, comb_profit, 0, 0, 0, 0, 0, 0), # NEED TO UPDATE VALUES
+  Profit = c(cost_profit, comb_profit, 2694000, 2151000, 2750000, 2706500, 2736000, 2512000), # NEED TO UPDATE VALUES
   Kappa = c(round(cost_kappa, digits = 4), round(comb_kappa, digits = 4), 0.6392, 0.5322, 0.6529, 0.6529, 0.6368, 0.5958) # NEED TO UPDATE VALUES
 )
 
 modeldata
+```
+
+## Savings
+```{r}
+# We can calculate the potential savings if our model can correctly identify the riskiest 10% of customers. We assume these customers account for a significant portion (50%) of total claims
+
+total_claims <- nrow(carinsurance_test) * 0.3133  # assuming 31.33% claim rate from data
+high_risk_claims <- total_claims * 0.5  # assuming 50% of claims come from top 10% riskiest
+savings <- high_risk_claims * 5000  # savings from identifying and mitigating these claims
 ```

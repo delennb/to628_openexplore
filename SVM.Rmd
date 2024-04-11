@@ -49,3 +49,17 @@ svm_cm
 
 write.csv(svmpred2, "svm_pred.csv", row.names = FALSE)
 ```
+
+```{r, cache=TRUE}
+TN <- svm_cm$table[1,1]
+FN <- svm_cm$table[1,2]
+FP <- svm_cm$table[2,1]
+TP <- svm_cm$table[2,2]
+
+# Profit
+svm_profit <- 5000*TP - 500*FP
+svm_kappa <- svm_cm$overall["Kappa"]
+
+svm_profit
+svm_kappa
+```

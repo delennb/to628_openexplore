@@ -403,6 +403,20 @@ dt_cm</code></pre>
 ##        &#39;Positive&#39; Class : 1               
 ## </code></pre>
 <pre class="r"><code>write.csv(dt_pred, &quot;dt_pred.csv&quot;, row.names = FALSE)</code></pre>
+<pre class="r"><code>TN &lt;- dt_cm$table[1,1]
+FN &lt;- dt_cm$table[1,2]
+FP &lt;- dt_cm$table[2,1]
+TP &lt;- dt_cm$table[2,2]
+
+# Profit
+dt_profit &lt;- 5000*TP - 500*FP
+dt_kappa &lt;- dt_cm$overall[&quot;Kappa&quot;]
+
+dt_profit</code></pre>
+<pre><code>## [1] 2706500</code></pre>
+<pre class="r"><code>dt_kappa</code></pre>
+<pre><code>##     Kappa 
+## 0.6528962</code></pre>
 </div>
 </div>
 

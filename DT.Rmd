@@ -38,3 +38,18 @@ dt_cm
 
 write.csv(dt_pred, "dt_pred.csv", row.names = FALSE)
 ```
+
+
+```{r, cache=TRUE}
+TN <- dt_cm$table[1,1]
+FN <- dt_cm$table[1,2]
+FP <- dt_cm$table[2,1]
+TP <- dt_cm$table[2,2]
+
+# Profit
+dt_profit <- 5000*TP - 500*FP
+dt_kappa <- dt_cm$overall["Kappa"]
+
+dt_profit
+dt_kappa
+```

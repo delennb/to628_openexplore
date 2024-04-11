@@ -41,3 +41,17 @@ knn_cm
 
 write.csv(attributes(knn_pred)$prob, "knn_pred.csv", row.names = FALSE)
 ```
+
+```{r, cache=TRUE}
+TN <- knn_cm$table[1,1]
+FN <- knn_cm$table[1,2]
+FP <- knn_cm$table[2,1]
+TP <- knn_cm$table[2,2]
+
+# Profit
+knn_profit <- 5000*TP - 500*FP
+knn_kappa <- knn_cm$overall["Kappa"]
+
+knn_profit
+knn_kappa
+```

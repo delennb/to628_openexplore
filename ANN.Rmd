@@ -43,3 +43,17 @@ ann_cm
 
 write.csv(ann_pred, "ann_pred.csv", row.names = FALSE)
 ```
+
+```{r, cache=TRUE}
+TN <- ann_cm$table[1,1]
+FN <- ann_cm$table[1,2]
+FP <- ann_cm$table[2,1]
+TP <- ann_cm$table[2,2]
+
+# Profit
+ann_profit <- 5000*TP - 500*FP
+ann_kappa <- ann_cm$overall["Kappa"]
+
+ann_profit
+ann_kappa
+```

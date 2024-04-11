@@ -49,3 +49,17 @@ rf_cm
 
 write.csv(rfPred, "rf_pred.csv", row.names = FALSE)
 ```
+
+```{r, cache=TRUE}
+TN <- rf_cm$table[1,1]
+FN <- rf_cm$table[1,2]
+FP <- rf_cm$table[2,1]
+TP <- rf_cm$table[2,2]
+
+# Profit
+rf_profit <- 5000*TP - 500*FP
+rf_kappa <- rf_cm$overall["Kappa"]
+
+rf_profit
+rf_kappa
+```
