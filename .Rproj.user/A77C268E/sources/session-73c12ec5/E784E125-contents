@@ -1,0 +1,89 @@
+---
+title: "LR"
+author: "Delenn Bauer"
+date: "2024-04-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## LR
+
+### Load Libraries and Data
+
+```{r}
+library(caret)
+source("addrow.R")
+
+carinsurance_train <- read.csv("carinsurance_train.csv")
+carinsurance_test <- read.csv("carinsurance_test.csv")
+
+str(carinsurance_train)
+summary(carinsurance_train)
+
+```
+
+### Build Model
+
+```{r, cache=TRUE}
+lr_model<- glm(OUTCOME1 ~ ., data = carinsurance_train, family = "binomial")
+summary(lr_model)
+```
+
+```{r, cache=TRUE}
+lr_model_big <- glm(OUTCOME1 ~ . + .*., data = carinsurance_train, family = "binomial")
+summary(lr_model_big)
+```
+
+```{r, cache=TRUE}
+# lr_model_step <- step(lr_model_big, direction = "backward")
+# summary(lr_model_step)
+```
+
+### Predict Test and Calculate Confusion Matrix
+```{r, cache=TRUE}
+lr_pred <- predict(lr_model, carinsurance_test, type = "response")
+```
+
+```{r, cache=TRUE}
+# lr_pred_step <- predict(lr_model_step, carinsurance_test, type = "response")
+```
+
+
+```{r, cache=TRUE}
+# Threshold
+lr_pred_bin <- ifelse(lr_pred > 0.5, 1, 0)
+# lr_pred_bin_step <- ifelse(lr_pred_step > 0.5, 1, 0)
+
+# Confusion Matrix
+lr_cm <- confusionMatrix(as.factor(lr_pred_bin), 
+                         as.factor(carinsurance_test$OUTCOME1), positive = "1")
+# lr_cm_step <- confusionMatrix(as.factor(lr_pred_bin_step),
+#                          as.factor(carinsurance_test$OUTCOME1), positive = "1")
+lr_cm
+# lr_cm_step
+
+# Write to file
+write.csv(lr_pred, "lr_pred.csv", row.names = FALSE)
+# write.csv(lr_pred_step, "lr_pred_step.csv", row.names = FALSE)
+```
+
+```{r, cache=TRUE}
+TN <- lr_cm$table[1,1]
+FN <- lr_cm$table[1,2]
+FP <- lr_cm$table[2,1]
+TP <- lr_cm$table[2,2]
+
+# Profit
+lr_profit <- 5000*TP - 500*FP
+lr_kappa <- lr_cm$overall["Kappa"]
+
+# Noramlize profits to 1000
+lr_profit <- (lr_profit / nrow(carinsurance_test))*1000
+append_row(lr_kappa["Kappa"], lr_profit, "LR")
+
+lr_profit
+lr_kappa
+```

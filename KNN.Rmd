@@ -15,6 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(caret)
 library(class)
+source("addrow.R")
 
 carinsurance_train_knn_x <- read.csv("carinsurance_train_knn.csv")
 carinsurance_train_knn_y <- read.csv("carinsurance_train_knn_label.csv")
@@ -51,6 +52,10 @@ TP <- knn_cm$table[2,2]
 # Profit
 knn_profit <- 5000*TP - 500*FP
 knn_kappa <- knn_cm$overall["Kappa"]
+
+# Noramlize profits to 1000
+knn_profit <- (knn_profit / nrow(carinsurance_test_knn_y))*1000
+append_row(knn_kappa["Kappa"], knn_profit, "KNN")
 
 knn_profit
 knn_kappa

@@ -1,0 +1,151 @@
+---
+title: "StackedModel"
+author: "Delenn Bauer"
+date: "2024-04-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Stacked Model
+
+### Load Libraries and Data
+```{r}
+library(C50)
+library(caret)
+source("addrow.R")
+
+lr <- read.csv("lr_pred.csv")
+knn <- read.csv("knn_pred.csv")
+ann <- read.csv("ann_pred.csv")
+dt <- read.csv("dt_pred.csv")
+svm <- read.csv("svm_pred.csv")
+rf <- read.csv("rf_pred.csv")
+
+lr$X <- NULL
+summary(lr)
+
+knn$X <- NULL
+summary(knn)
+
+ann$X <- NULL
+summary(ann)
+
+dt$X <- NULL
+summary(dt)
+
+summary(svm)
+
+summary(rf)
+
+carinsurance_test <- read.csv("carinsurance_test.csv")
+
+carinsurance_combined <- data.frame(lr$x, knn$x, ann$V1, dt$x, svm$V1, rf$x, carinsurance_test$OUTCOME1)
+summary(carinsurance_combined)
+
+```
+
+### Build Model
+
+```{r, cache=TRUE}
+train_ratio <- 0.7
+set.seed(12345)
+train_rows <- sample(1:nrow(carinsurance_combined), train_ratio*nrow(carinsurance_combined))
+
+train_2 <- carinsurance_combined[train_rows,]
+test_2 <- carinsurance_combined[-train_rows,]
+
+model_2 <- C5.0(as.factor(carinsurance_test.OUTCOME1) ~ ., data = train_2)
+
+pred_2 <- predict(model_2, test_2)
+
+comb_cm <- confusionMatrix(as.factor(pred_2), as.factor(test_2$carinsurance_test.OUTCOME1), positive = "1")
+comb_cm
+
+plot(model_2)
+```
+
+### Error Cost
+```{r, cache=TRUE}
+cost_matrix <- matrix(c(0,2,3,0), nrow = 2) # NEED TO UPDATE COST MATRIX
+
+# False Positives (FP): If we predict a customer will file a claim, but they don't, the cost to the company is the additional resources spent on investigating and monitoring that customer. We assume around $500 per FP.
+# False Negatives (FN): If we fail to predict a claim, and the customer does file one, the cost is the actual claim payout. Based on industry data, the average car insurance claim payout is about $5,000.
+
+# cost_matrix <- matrix(c(0, 5000, 500, 0), nrow = 2) 
+cost_matrix
+
+cost_model <-  C5.0(as.factor(carinsurance_test.OUTCOME1) ~ ., data = train_2, costs = cost_matrix)
+
+plot(cost_model)
+
+pred_cost<- predict(cost_model, test_2)
+
+cost_cm <- confusionMatrix(as.factor(pred_cost), as.factor(test_2$carinsurance_test.OUTCOME1), positive = "1")
+cost_cm
+```
+
+### Profit
+```{r}
+TN <- comb_cm$table[1,1]
+FN <- comb_cm$table[1,2]
+FP <- comb_cm$table[2,1]
+TP <- comb_cm$table[2,2]
+
+TNcost <- cost_cm$table[1,1]
+FNcost <- cost_cm$table[1,2]
+FPcost <- cost_cm$table[2,1]
+TPcost <- cost_cm$table[2,2]
+
+# Profit
+comb_profit <- 5000*TP - 500*FP
+comb_kappa <- comb_cm$overall["Kappa"]
+
+cost_profit <- 5000*TPcost - 500*FPcost
+cost_kappa <- cost_cm$overall["Kappa"]
+
+# Normalize profit to 1000 entries
+tot <- TN + FN + FP + TP
+comb_profit <- (comb_profit / tot)*1000
+cost_profit <- (cost_profit / tot)*1000
+append_row(comb_kappa["Kappa"], comb_profit, "Stacked")
+append_row(cost_kappa["Kappa"], cost_profit, "StackedCost")
+
+comb_profit
+comb_kappa
+
+cost_profit
+cost_kappa
+```
+
+## Summary of Model Performance
+```{r, cache=TRUE}
+dataa <- read.csv("carinsurance_stats.csv")
+
+# Split the single column into three columns based on space delimiter
+split_data <- strsplit(dataa$RowName.kappa.profit, " ")
+
+RowName <- sapply(split_data, "[", 1)
+kappa <- as.numeric(sapply(split_data, "[", 2))
+profit <- as.numeric(sapply(split_data, "[", 3))
+
+# Summary Table of Model Performance
+modeldata <- data.frame(
+  Model = RowName,
+  Profit = profit,
+  Kappa = kappa
+)
+
+modeldata
+```
+
+## Savings
+```{r}
+# We can calculate the potential savings if our model can correctly identify the riskiest 10% of customers. We assume these customers account for a significant portion (50%) of total claims
+
+total_claims <- nrow(carinsurance_test) * 0.3133  # assuming 31.33% claim rate from data
+high_risk_claims <- total_claims * 0.5  # assuming 50% of claims come from top 10% riskiest
+savings <- high_risk_claims * 5000  # savings from identifying and mitigating these claims
+```

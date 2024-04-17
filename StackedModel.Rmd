@@ -15,6 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(C50)
 library(caret)
+source("addrow.R")
 
 lr <- read.csv("lr_pred.csv")
 knn <- read.csv("knn_pred.csv")
@@ -105,6 +106,13 @@ comb_kappa <- comb_cm$overall["Kappa"]
 cost_profit <- 5000*TPcost - 500*FPcost
 cost_kappa <- cost_cm$overall["Kappa"]
 
+# Normalize profit to 1000 entries
+tot <- TN + FN + FP + TP
+comb_profit <- (comb_profit / tot)*1000
+cost_profit <- (cost_profit / tot)*1000
+append_row(comb_kappa["Kappa"], comb_profit, "Stacked")
+append_row(cost_kappa["Kappa"], cost_profit, "StackedCost")
+
 comb_profit
 comb_kappa
 
@@ -113,11 +121,21 @@ cost_kappa
 ```
 
 ## Summary of Model Performance
-```{r}
+```{r, cache=TRUE}
+dataa <- read.csv("carinsurance_stats.csv")
+
+# Split the single column into three columns based on space delimiter
+split_data <- strsplit(dataa$RowName.kappa.profit, " ")
+
+RowName <- sapply(split_data, "[", 1)
+kappa <- as.numeric(sapply(split_data, "[", 2))
+profit <- as.numeric(sapply(split_data, "[", 3))
+
+# Summary Table of Model Performance
 modeldata <- data.frame(
-  Model = c("Stacked Cost", "Stacked", "LR", "KNN", "ANN", "DT", "RF", "SVM"),
-  Profit = c(cost_profit, comb_profit, 2694000, 2151000, 2750000, 2706500, 2736000, 2512000), # NEED TO UPDATE VALUES
-  Kappa = c(round(cost_kappa, digits = 4), round(comb_kappa, digits = 4), 0.6392, 0.5322, 0.6529, 0.6529, 0.6368, 0.5958) # NEED TO UPDATE VALUES
+  Model = RowName,
+  Profit = profit,
+  Kappa = kappa
 )
 
 modeldata

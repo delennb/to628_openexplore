@@ -1,0 +1,9 @@
+# Function to append a single row to the CSV file
+append_row <- function(kappa_value, profit_value, row_name) {
+  # Create a data frame with the row data
+  row_data <- data.frame(kappa = kappa_value, profit = profit_value)
+  # Add custom row name as a new column
+  row_data <- cbind(RowName = row_name, row_data)
+  # Append to the CSV file
+  write.table(row_data, file = "carinsurance_stats.csv", row.names = FALSE, append = TRUE, col.names = !file.exists("carinsurance_stats.csv"))
+}

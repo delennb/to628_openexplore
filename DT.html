@@ -365,6 +365,7 @@ display: none;
 <pre><code>## Loading required package: ggplot2</code></pre>
 <pre><code>## Loading required package: lattice</code></pre>
 <pre class="r"><code>library(C50) # for decision tree
+source(&quot;addrow.R&quot;)
 
 carinsurance_train_dt &lt;- read.csv(&quot;carinsurance_train.csv&quot;)
 carinsurance_test_dt &lt;- read.csv(&quot;carinsurance_test.csv&quot;)</code></pre>
@@ -412,8 +413,12 @@ TP &lt;- dt_cm$table[2,2]
 dt_profit &lt;- 5000*TP - 500*FP
 dt_kappa &lt;- dt_cm$overall[&quot;Kappa&quot;]
 
+# Normalize profits to 1000
+dt_profit &lt;- (dt_profit / nrow(carinsurance_test_dt))*1000
+append_row(dt_kappa[&quot;Kappa&quot;], dt_profit, &quot;DT&quot;)
+
 dt_profit</code></pre>
-<pre><code>## [1] 2706500</code></pre>
+<pre><code>## [1] 1106953</code></pre>
 <pre class="r"><code>dt_kappa</code></pre>
 <pre><code>##     Kappa 
 ## 0.6528962</code></pre>

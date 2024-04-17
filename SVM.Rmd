@@ -16,6 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(kernlab)
 library(caret)
+source("addrow.R")
 
 svm_train <- read.csv("carinsurance_train.csv")
 svm_test <- read.csv("carinsurance_test.csv")
@@ -59,6 +60,10 @@ TP <- svm_cm$table[2,2]
 # Profit
 svm_profit <- 5000*TP - 500*FP
 svm_kappa <- svm_cm$overall["Kappa"]
+
+# Normalize profits to 1000
+svm_profit <- (svm_profit / nrow(svm_test))*1000
+append_row(svm_kappa["Kappa"], svm_profit, "SVM")
 
 svm_profit
 svm_kappa

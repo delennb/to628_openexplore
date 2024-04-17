@@ -16,6 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(caret)
 library(neuralnet)
+source("addrow.R")
 
 carinsurance_train_ann <- read.csv("carinsurance_train_ann.csv")
 carinsurance_test_ann <- read.csv("carinsurance_test_ann.csv")
@@ -53,6 +54,10 @@ TP <- ann_cm$table[2,2]
 # Profit
 ann_profit <- 5000*TP - 500*FP
 ann_kappa <- ann_cm$overall["Kappa"]
+
+# Noramlize profits to 1000
+ann_profit <- (ann_profit / nrow(carinsurance_test_ann))*1000
+append_row(ann_kappa["Kappa"], ann_profit, "ANN")
 
 ann_profit
 ann_kappa

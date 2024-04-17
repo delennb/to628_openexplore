@@ -365,7 +365,9 @@ display: none;
 library(caret)</code></pre>
 <pre><code>## Loading required package: ggplot2</code></pre>
 <pre><code>## Loading required package: lattice</code></pre>
-<pre class="r"><code>lr &lt;- read.csv(&quot;lr_pred.csv&quot;)
+<pre class="r"><code>source(&quot;addrow.R&quot;)
+
+lr &lt;- read.csv(&quot;lr_pred.csv&quot;)
 knn &lt;- read.csv(&quot;knn_pred.csv&quot;)
 ann &lt;- read.csv(&quot;ann_pred.csv&quot;)
 dt &lt;- read.csv(&quot;dt_pred.csv&quot;)
@@ -556,13 +558,20 @@ comb_kappa &lt;- comb_cm$overall[&quot;Kappa&quot;]
 cost_profit &lt;- 5000*TPcost - 500*FPcost
 cost_kappa &lt;- cost_cm$overall[&quot;Kappa&quot;]
 
+# Normalize profit to 1000 entries
+tot &lt;- TN + FN + FP + TP
+comb_profit &lt;- (comb_profit / tot)*1000
+cost_profit &lt;- (cost_profit / tot)*1000
+append_row(comb_kappa[&quot;Kappa&quot;], comb_profit, &quot;Stacked&quot;)
+append_row(cost_kappa[&quot;Kappa&quot;], cost_profit, &quot;StackedCost&quot;)
+
 comb_profit</code></pre>
-<pre><code>## [1] 885000</code></pre>
+<pre><code>## [1] 1205722</code></pre>
 <pre class="r"><code>comb_kappa</code></pre>
 <pre><code>##    Kappa 
 ## 0.611836</code></pre>
 <pre class="r"><code>cost_profit</code></pre>
-<pre><code>## [1] 933000</code></pre>
+<pre><code>## [1] 1271117</code></pre>
 <pre class="r"><code>cost_kappa</code></pre>
 <pre><code>##     Kappa 
 ## 0.6356787</code></pre>
@@ -570,22 +579,32 @@ comb_profit</code></pre>
 </div>
 <div id="summary-of-model-performance" class="section level2">
 <h2>Summary of Model Performance</h2>
-<pre class="r"><code>modeldata &lt;- data.frame(
-  Model = c(&quot;Stacked Cost&quot;, &quot;Stacked&quot;, &quot;LR&quot;, &quot;KNN&quot;, &quot;ANN&quot;, &quot;DT&quot;, &quot;RF&quot;, &quot;SVM&quot;),
-  Profit = c(cost_profit, comb_profit, 2694000, 2151000, 2750000, 2706500, 2736000, 2512000), # NEED TO UPDATE VALUES
-  Kappa = c(round(cost_kappa, digits = 4), round(comb_kappa, digits = 4), 0.6392, 0.5322, 0.6529, 0.6529, 0.6368, 0.5958) # NEED TO UPDATE VALUES
+<pre class="r"><code>dataa &lt;- read.csv(&quot;carinsurance_stats.csv&quot;)
+
+# Split the single column into three columns based on space delimiter
+split_data &lt;- strsplit(dataa$RowName.kappa.profit, &quot; &quot;)
+
+RowName &lt;- sapply(split_data, &quot;[&quot;, 1)
+kappa &lt;- as.numeric(sapply(split_data, &quot;[&quot;, 2))
+profit &lt;- as.numeric(sapply(split_data, &quot;[&quot;, 3))
+
+# Summary Table of Model Performance
+modeldata &lt;- data.frame(
+  Model = RowName,
+  Profit = profit,
+  Kappa = kappa
 )
 
 modeldata</code></pre>
-<pre><code>##          Model  Profit  Kappa
-## 1 Stacked Cost  933000 0.6357
-## 2      Stacked  885000 0.6118
-## 3           LR 2694000 0.6392
-## 4          KNN 2151000 0.5322
-## 5          ANN 2750000 0.6529
-## 6           DT 2706500 0.6529
-## 7           RF 2736000 0.6368
-## 8          SVM 2512000 0.5958</code></pre>
+<pre><code>##         Model    Profit     Kappa
+## 1          LR 1101840.5 0.6391738
+## 2         KNN  879754.6 0.5322007
+## 3         ANN 1124744.4 0.6528780
+## 4          DT 1106953.0 0.6528962
+## 5          RF 1119018.4 0.6367809
+## 6         SVM 1027402.9 0.5958071
+## 7     Stacked 1205722.1 0.6118360
+## 8 StackedCost 1271117.2 0.6356787</code></pre>
 </div>
 <div id="savings" class="section level2">
 <h2>Savings</h2>

@@ -365,6 +365,7 @@ display: none;
 <pre><code>## Loading required package: ggplot2</code></pre>
 <pre><code>## Loading required package: lattice</code></pre>
 <pre class="r"><code>library(class)
+source(&quot;addrow.R&quot;)
 
 carinsurance_train_knn_x &lt;- read.csv(&quot;carinsurance_train_knn.csv&quot;)
 carinsurance_train_knn_y &lt;- read.csv(&quot;carinsurance_train_knn_label.csv&quot;)
@@ -479,8 +480,12 @@ TP &lt;- knn_cm$table[2,2]
 knn_profit &lt;- 5000*TP - 500*FP
 knn_kappa &lt;- knn_cm$overall[&quot;Kappa&quot;]
 
+# Noramlize profits to 1000
+knn_profit &lt;- (knn_profit / nrow(carinsurance_test_knn_y))*1000
+append_row(knn_kappa[&quot;Kappa&quot;], knn_profit, &quot;KNN&quot;)
+
 knn_profit</code></pre>
-<pre><code>## [1] 2151000</code></pre>
+<pre><code>## [1] 879754.6</code></pre>
 <pre class="r"><code>knn_kappa</code></pre>
 <pre><code>##     Kappa 
 ## 0.5322007</code></pre>

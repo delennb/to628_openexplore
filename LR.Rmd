@@ -15,6 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(caret)
+source("addrow.R")
 
 carinsurance_train <- read.csv("carinsurance_train.csv")
 carinsurance_test <- read.csv("carinsurance_test.csv")
@@ -32,8 +33,8 @@ summary(lr_model)
 ```
 
 ```{r, cache=TRUE}
-# lr_model_big <- glm(OUTCOME1 ~ . + .*., data = carinsurance_train, family = "binomial")
-# summary(lr_model_big)
+lr_model_big <- glm(OUTCOME1 ~ . + .*., data = carinsurance_train, family = "binomial")
+summary(lr_model_big)
 ```
 
 ```{r, cache=TRUE}
@@ -79,7 +80,10 @@ TP <- lr_cm$table[2,2]
 lr_profit <- 5000*TP - 500*FP
 lr_kappa <- lr_cm$overall["Kappa"]
 
+# Noramlize profits to 1000
+lr_profit <- (lr_profit / nrow(carinsurance_test))*1000
+append_row(lr_kappa["Kappa"], lr_profit, "LR")
+
 lr_profit
 lr_kappa
 ```
-

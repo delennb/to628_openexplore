@@ -370,7 +370,9 @@ library(caret)</code></pre>
 ## 
 ##     alpha</code></pre>
 <pre><code>## Loading required package: lattice</code></pre>
-<pre class="r"><code>svm_train &lt;- read.csv(&quot;carinsurance_train.csv&quot;)
+<pre class="r"><code>source(&quot;addrow.R&quot;)
+
+svm_train &lt;- read.csv(&quot;carinsurance_train.csv&quot;)
 svm_test &lt;- read.csv(&quot;carinsurance_test.csv&quot;)
 
 summary(svm_train)</code></pre>
@@ -482,8 +484,12 @@ TP &lt;- svm_cm$table[2,2]
 svm_profit &lt;- 5000*TP - 500*FP
 svm_kappa &lt;- svm_cm$overall[&quot;Kappa&quot;]
 
+# Normalize profits to 1000
+svm_profit &lt;- (svm_profit / nrow(svm_test))*1000
+append_row(svm_kappa[&quot;Kappa&quot;], svm_profit, &quot;SVM&quot;)
+
 svm_profit</code></pre>
-<pre><code>## [1] 2512000</code></pre>
+<pre><code>## [1] 1027403</code></pre>
 <pre class="r"><code>svm_kappa</code></pre>
 <pre><code>##     Kappa 
 ## 0.5958071</code></pre>

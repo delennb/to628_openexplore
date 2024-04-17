@@ -16,6 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(randomForest)
 library(caret)
+source("addrow.R")
 
 rf_train <- read.csv("carinsurance_train.csv")
 rf_test <- read.csv("carinsurance_test.csv")
@@ -59,6 +60,10 @@ TP <- rf_cm$table[2,2]
 # Profit
 rf_profit <- 5000*TP - 500*FP
 rf_kappa <- rf_cm$overall["Kappa"]
+
+# Normalize profits to 1000
+rf_profit <- (rf_profit / nrow(rf_test))*1000
+append_row(rf_kappa["Kappa"], rf_profit, "RF")
 
 rf_profit
 rf_kappa

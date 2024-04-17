@@ -365,6 +365,7 @@ display: none;
 <pre><code>## Loading required package: ggplot2</code></pre>
 <pre><code>## Loading required package: lattice</code></pre>
 <pre class="r"><code>library(neuralnet)
+source(&quot;addrow.R&quot;)
 
 carinsurance_train_ann &lt;- read.csv(&quot;carinsurance_train_ann.csv&quot;)
 carinsurance_test_ann &lt;- read.csv(&quot;carinsurance_test_ann.csv&quot;)
@@ -493,8 +494,12 @@ TP &lt;- ann_cm$table[2,2]
 ann_profit &lt;- 5000*TP - 500*FP
 ann_kappa &lt;- ann_cm$overall[&quot;Kappa&quot;]
 
+# Noramlize profits to 1000
+ann_profit &lt;- (ann_profit / nrow(carinsurance_test_ann))*1000
+append_row(ann_kappa[&quot;Kappa&quot;], ann_profit, &quot;ANN&quot;)
+
 ann_profit</code></pre>
-<pre><code>## [1] 2750000</code></pre>
+<pre><code>## [1] 1124744</code></pre>
 <pre class="r"><code>ann_kappa</code></pre>
 <pre><code>##    Kappa 
 ## 0.652878</code></pre>

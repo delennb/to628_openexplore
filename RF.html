@@ -372,7 +372,9 @@ display: none;
 ## 
 ##     margin</code></pre>
 <pre><code>## Loading required package: lattice</code></pre>
-<pre class="r"><code>rf_train &lt;- read.csv(&quot;carinsurance_train.csv&quot;)
+<pre class="r"><code>source(&quot;addrow.R&quot;)
+
+rf_train &lt;- read.csv(&quot;carinsurance_train.csv&quot;)
 rf_test &lt;- read.csv(&quot;carinsurance_test.csv&quot;)
 
 str(rf_train)</code></pre>
@@ -530,8 +532,12 @@ TP &lt;- rf_cm$table[2,2]
 rf_profit &lt;- 5000*TP - 500*FP
 rf_kappa &lt;- rf_cm$overall[&quot;Kappa&quot;]
 
+# Normalize profits to 1000
+rf_profit &lt;- (rf_profit / nrow(rf_test))*1000
+append_row(rf_kappa[&quot;Kappa&quot;], rf_profit, &quot;RF&quot;)
+
 rf_profit</code></pre>
-<pre><code>## [1] 2736000</code></pre>
+<pre><code>## [1] 1119018</code></pre>
 <pre class="r"><code>rf_kappa</code></pre>
 <pre><code>##     Kappa 
 ## 0.6367809</code></pre>

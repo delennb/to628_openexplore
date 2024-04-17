@@ -16,6 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(caret)
 library(C50) # for decision tree
+source("addrow.R")
 
 carinsurance_train_dt <- read.csv("carinsurance_train.csv")
 carinsurance_test_dt <- read.csv("carinsurance_test.csv")
@@ -49,6 +50,10 @@ TP <- dt_cm$table[2,2]
 # Profit
 dt_profit <- 5000*TP - 500*FP
 dt_kappa <- dt_cm$overall["Kappa"]
+
+# Normalize profits to 1000
+dt_profit <- (dt_profit / nrow(carinsurance_test_dt))*1000
+append_row(dt_kappa["Kappa"], dt_profit, "DT")
 
 dt_profit
 dt_kappa
