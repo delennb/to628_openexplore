@@ -357,10 +357,34 @@ display: none;
 </div>
 
 
+<div id="problem" class="section level2">
+<h2>Problem</h2>
+<p>In an increasingly competitive insurance market, the ability to
+accurately assess risk and set appropriate premiums is crucial. We’re
+going to use a hypothetical company called “M cAAr” as our vehicle to
+illustrate the challenge of determining the likelihood of claims among
+its clientele. In this report, we will outline the development of our
+predictive model designed to identify high-risk customers more
+accurately. The model integrates various predictors including
+demographic, socioeconomic, driving history, and vehicle features. This
+approach not only aims to optimize financial outcomes for M cAAr but
+also enhances customer satisfaction and retention by setting fair
+premiums based on predicted risk.</p>
+</div>
+<div id="dataset" class="section level2">
+<h2>Dataset</h2>
+<p>The predictive model was developed using a dataset of 10,000 car
+insurance claim records. This dataset included a diverse range of
+predictors, such as age, gender, race, income, education, driving
+experience, and vehicle type.</p>
+</div>
 <div id="stacked-model" class="section level2">
 <h2>Stacked Model</h2>
 <div id="load-libraries-and-data" class="section level3">
 <h3>Load Libraries and Data</h3>
+<p>We load the predictions from the various first-level models and
+combine them and the test data for further analysis into second-level
+stacked models.</p>
 <pre class="r"><code>library(C50)
 library(caret)</code></pre>
 <pre><code>## Loading required package: ggplot2</code></pre>
@@ -456,6 +480,12 @@ summary(carinsurance_combined)</code></pre>
 </div>
 <div id="build-model" class="section level3">
 <h3>Build Model</h3>
+<p>Our stacked model leverages two levels of models, using multiple
+machine learning algorithms, including Logistic Regression, Decision
+Trees, Artificial Neural Networks, k-Nearest Neighbors, Support Vector
+Machines, and Random Forests in the first level. The second level
+consists of a stacked model that combines predictions from the
+first-level models using a C5.0 decision tree.</p>
 <pre class="r"><code>train_ratio &lt;- 0.7
 set.seed(12345)
 train_rows &lt;- sample(1:nrow(carinsurance_combined), train_ratio*nrow(carinsurance_combined))
@@ -504,6 +534,12 @@ incorporate the other first-level models.</p>
 </div>
 <div id="error-cost" class="section level3">
 <h3>Error Cost</h3>
+<p>A second stacked model was created that is cost-sensitive, allowing
+us to incorporate the financial aspect of the problem. We ensured that
+the model was trained with balanced costs to reflect the financial
+impacts of overcharging or undercharging customers, leading to a cost
+matrix setup where the penalty for a false negative was higher than that
+for a false positive.</p>
 <pre class="r"><code>cost_matrix &lt;- matrix(c(0,2,3,0), nrow = 2) # NEED TO UPDATE COST MATRIX
 
 # False Positives (FP): If we predict a customer will file a claim, but they don&#39;t, the cost to the company is the additional resources spent on investigating and monitoring that customer. We assume around $500 per FP.
@@ -564,6 +600,10 @@ lower kappa values.</p>
 </div>
 <div id="profit" class="section level3">
 <h3>Profit</h3>
+<p>We analyze the profit by considering the financial impact of true
+positives (correctly predicting claims) and false positives (incorrectly
+predicting claims). The profit is calculated based on the assumed claim
+payout and the cost of false positives.</p>
 <pre class="r"><code>TN &lt;- comb_cm$table[1,1]
 FN &lt;- comb_cm$table[1,2]
 FP &lt;- comb_cm$table[2,1]
@@ -602,6 +642,9 @@ comb_profit</code></pre>
 </div>
 <div id="summary-of-model-performance" class="section level2">
 <h2>Summary of Model Performance</h2>
+<p>We summarize the performance of various models in terms of profit and
+Kappa statistic, which measures the agreement between predicted and
+actual outcomes.</p>
 <pre class="r"><code>dataa &lt;- read.csv(&quot;carinsurance_stats.csv&quot;)
 
 # Split the single column into three columns based on space delimiter
@@ -643,6 +686,9 @@ that takes the relative costs of incorrect predictions into account.</p>
 </div>
 <div id="bar-chart" class="section level2">
 <h2>Bar Chart</h2>
+<p>We visualize the profit and Kappa performance of different models
+using bar charts, distinguishing between first-level models and
+second-level stacked models.</p>
 <pre class="r"><code># Set the order of levels in the Model variable
 modeldata$Model &lt;- factor(modeldata$Model, levels = c(&quot;LR&quot;, &quot;KNN&quot;, &quot;ANN&quot;, &quot;DT&quot;, &quot;RF&quot;, &quot;SVM&quot;, &quot;Stacked&quot;, &quot;StackedCost&quot;))
 
@@ -687,6 +733,9 @@ values are in a similar range to that of the first-level ones.</p>
 </div>
 <div id="roc-curves-for-first-level-models" class="section level2">
 <h2>ROC Curves for First-Level Models</h2>
+<p>We plot the ROC curves for different models to evaluate their
+performance in terms of true positive rate (sensitivity) and false
+positive rate (1-specificity).</p>
 <pre class="r"><code># Calculate ROC curve for LR model
 roc_lr &lt;- roc(carinsurance_test$OUTCOME1, lr$x)</code></pre>
 <pre><code>## Setting levels: control = 0, case = 1</code></pre>
@@ -743,6 +792,40 @@ closer to the grey line.</p>
 total_claims &lt;- nrow(carinsurance_test) * 0.3133  # assuming 31.33% claim rate from data
 high_risk_claims &lt;- total_claims * 0.5  # assuming 50% of claims come from top 10% riskiest
 savings &lt;- high_risk_claims * 5000  # savings from identifying and mitigating these claims</code></pre>
+</div>
+<div id="risks-and-challenges" class="section level2">
+<h2>Risks and Challenges</h2>
+<p>The implementation of predictive models in risk assessment comes with
+several risks and challenges. Firstly, handling sensitive personal
+information requires stringent data protection measures to prevent
+breaches and ensure compliance with legal standards. Secondly, there’s a
+risk of model overfitting, where the model performs well on training
+data but poorly on unseen data, necessitating robust cross-validation
+methods. Thirdly, the model must be constantly evaluated to avoid biases
+based on demographic and socioeconomic data, which could lead to
+discriminatory pricing. Moreover, the model requires periodic updates as
+new data becomes available and driving behaviors evolve, demanding
+ongoing maintenance and recalibration. Lastly, aligning the model’s
+deployment with business objectives and integrating it into existing IT
+systems can be complex, requiring careful planning and execution.</p>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>The predictive analytics approach adopted by M cAAr demonstrates a
+significant advancement in risk assessment for car insurance. By
+accurately identifying high-risk customers, the company can set premiums
+more effectively, thus maximizing profit while minimizing risks. The
+highest profit achieved with the Stacked Cost Model indicates its
+efficacy, blending financial considerations with predictive
+accuracy.</p>
+<p>This model not only promises improved financial outcomes but also
+better customer relationships through fair pricing. However, the success
+of such initiatives depends heavily on addressing the associated risks
+and challenges, particularly in terms of data management, model
+integrity, and integration into business processes. Moving forward, M
+cAAr must continue to innovate and adapt its strategies in response to
+new data and emerging market trends to maintain its competitive edge in
+the insurance industry.</p>
 </div>
 
 
