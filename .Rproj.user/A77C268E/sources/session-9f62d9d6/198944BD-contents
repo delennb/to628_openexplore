@@ -70,6 +70,8 @@ comb_cm
 plot(model_2)
 ```
 
+As is shown in the decision tree plot of the basic stacked model above, this model only splits on the ANN first-level model, and doesn't incorporate the other first-level models.
+
 ### Error Cost
 ```{r, cache=TRUE}
 cost_matrix <- matrix(c(0,2,3,0), nrow = 2) # NEED TO UPDATE COST MATRIX
@@ -89,6 +91,11 @@ pred_cost<- predict(cost_model, test_2)
 cost_cm <- confusionMatrix(as.factor(pred_cost), as.factor(test_2$carinsurance_test.OUTCOME1), positive = "1")
 cost_cm
 ```
+
+The plot of the decision tree for the stacked cost model incorporates several of the first-level models, unlike the basic stacked model. Here we can see that the model splits on 4 of 6 of the first-level models, first splitting on ANN, then DT, LR, and KNN.
+
+The cost matrix (as shown) used in the stacked cost model penalizes false positives by 2 and false negatives by 3. This weighting is consistent with the estimated costs for incorrect predictions within the larger context of the car insurance problem. Many other cost matrix penalty ratios were also tested, but this cost matrix maximized the performance of the model and other cost models resulted in significantly lower kappa values.
+
 
 ### Profit
 ```{r}
@@ -144,6 +151,8 @@ modeldata <- data.frame(
 modeldata
 ```
 
+The table above provides a summary of the metrics for each of the models used - both first and second level. Most of the kappa values are all in the same range of around ~0.6, with the exception of KNN being a bit lower (~0.53). ANN and DT have the highest kappas of around ~0.65. In terms of the profit, all of the models except KNN are greater than $1 million. These profit values are all normalized to 1000 instances for consistency. Both stacked models result in higher profits than any of the individual models, with the stacked cost model generating the highest revenue of \$1,271,117.20. This shows that overall, our stacked models did improve upon the first-level models. It makes sense that the stacked cost model generates the highest profit as it is the only model that takes the relative costs of incorrect predictions into account.
+
 ## Bar Chart
 ```{r, cache=TRUE}
 # Set the order of levels in the Model variable
@@ -183,6 +192,7 @@ print(profit_chart)
 print(kappa_chart)
 ```
 
+As explained previously, these bar charts reaffirm the increased performance of the stacked models, especially the stacked cost model, over the first-level models. The profit values are higher and the kappa values are in a similar range to that of the first-level ones.
 
 ## ROC Curves for First-Level Models
 ```{r, cache=TRUE}
@@ -222,6 +232,7 @@ plot(roc_svm, col = "brown", add = TRUE)
 legend("bottomright", legend = c("LR", "KNN", "ANN", "DT", "RF", "SVM"), col = c("blue", "red", "green", "orange", "purple", "brown"), lty = 1)
 ```
 
+ROC curves of all of the first-level models were plotted to give insight into their discrimination capabilities and illustrate their performance. The majority of the models have decent discrimination capability as their curves tend toward the upper left hand corner of the plot rather than the grey line (representing random discrimination), meaning that they have relatively high AUC values. KNN performs somewhat worse than the other first-level models, as is shown by its curve being closer to the grey line.
 
 ## Savings
 ```{r}
