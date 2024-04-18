@@ -424,6 +424,19 @@ dt_profit</code></pre>
 ## 0.6528962</code></pre>
 </div>
 </div>
+<div id="prediction-with-probability-for-roc-curve" class="section level2">
+<h2>Prediction with Probability for roc curve</h2>
+<pre class="r"><code>dt_pred_prob &lt;- predict(dtmodel, carinsurance_test_dt, type = &quot;prob&quot;)
+summary(dt_pred_prob)</code></pre>
+<pre><code>##        0                  1          
+##  Min.   :0.009579   Min.   :0.02360  
+##  1st Qu.:0.368473   1st Qu.:0.05187  
+##  Median :0.902718   Median :0.09728  
+##  Mean   :0.693343   Mean   :0.30666  
+##  3rd Qu.:0.948129   3rd Qu.:0.63153  
+##  Max.   :0.976399   Max.   :0.99042</code></pre>
+<pre class="r"><code>write.csv(dt_pred_prob, &quot;dt_pred_prob.csv&quot;, row.names = FALSE)</code></pre>
+</div>
 
 
 

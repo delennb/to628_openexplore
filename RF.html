@@ -543,6 +543,19 @@ rf_profit</code></pre>
 ## 0.6367809</code></pre>
 </div>
 </div>
+<div id="prediction-with-probability-for-roc-curve" class="section level2">
+<h2>Prediction with Probability for roc curve</h2>
+<pre class="r"><code>rfPred_prob &lt;- predict(rfModel, rf_test, type = &quot;prob&quot;)
+summary(rfPred_prob)</code></pre>
+<pre><code>##        0                1         
+##  Min.   :0.0000   Min.   :0.0000  
+##  1st Qu.:0.3880   1st Qu.:0.0360  
+##  Median :0.8240   Median :0.1760  
+##  Mean   :0.6753   Mean   :0.3247  
+##  3rd Qu.:0.9640   3rd Qu.:0.6120  
+##  Max.   :1.0000   Max.   :1.0000</code></pre>
+<pre class="r"><code>write.csv(rfPred_prob, &quot;rf_pred_prob.csv&quot;, row.names = FALSE)</code></pre>
+</div>
 
 
 

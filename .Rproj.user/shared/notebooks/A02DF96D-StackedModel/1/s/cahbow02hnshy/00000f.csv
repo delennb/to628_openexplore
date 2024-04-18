@@ -1,0 +1,7 @@
+"0","# Calculate ROC curve for RF model
+rf_prob <- read.csv(""rf_pred_prob.csv"")
+roc_rf <- roc(carinsurance_test$OUTCOME1, rf$x)
+"
+"2","Error in roc(carinsurance_test$OUTCOME1, rf$x) : 
+  could not find function ""roc""
+"

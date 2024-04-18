@@ -184,7 +184,7 @@ print(kappa_chart)
 ```
 
 
-## ROC Curves
+## ROC Curves for First-Level Models
 ```{r, cache=TRUE}
 # Calculate ROC curve for LR model
 roc_lr <- roc(carinsurance_test$OUTCOME1, lr$x)
@@ -196,51 +196,18 @@ roc_knn <- roc(carinsurance_test$OUTCOME1, knn$x)
 roc_ann <- roc(carinsurance_test$OUTCOME1, ann$V1)
 
 # Calculate ROC curve for DT model
-roc_dt <- roc(carinsurance_test$OUTCOME1, dt$x)
+dt_prob <- read.csv("dt_pred_prob.csv")
+# roc_dt <- roc(carinsurance_test$OUTCOME1, dt$x)
+roc_dt <- roc(carinsurance_test$OUTCOME1, dt_prob$X1)
 
 # Calculate ROC curve for RF model
-roc_rf <- roc(carinsurance_test$OUTCOME1, rf$x)
+rf_prob <- read.csv("rf_pred_prob.csv")
+# roc_rf <- roc(carinsurance_test$OUTCOME1, rf_prob$X1)
+# positive_class_prob <- rf_prob[, "1"]
+roc_rf <- roc(carinsurance_test$OUTCOME1, rf_prob$X1)
 
 # Calculate ROC curve for SVM model
 roc_svm <- roc(carinsurance_test$OUTCOME1, svm$V1)
-
-# Probablilities for Stacked Models
-
-# Get the predicted class labels for model_2 and cost_model
-# pred_model_2 <- predict(model_2, test_2, type = "class")
-# # pred_cost_model <- predict(cost_model, test_2, type = "class")
-# # pred_model_2 <- predict(model_2, test_2, type = "raw")[, 2]  # Use raw probabilities
-# # pred_cost_model <- predict(cost_model, test_2, type = "raw")[, 2]  # Use raw probabiliti
-# # # Convert actual labels to numeric format (0 for negative class, 1 for positive class)
-# # actual <- as.numeric(test_2$OUTCOME1 == "1")
-# # # Calculate performance metrics (TPR and FPR)
-# # perf_2 <- performance(prediction(pred_model_2, actual), "tpr", "fpr")
-# # perf_cost <- performance(prediction(pred_cost_model, actual), "tpr", "fpr")
-# 
-# # pred_model_2_prob <- predict(model_2, test_2, type = "prob")
-# # pred_cost_model_prob <- predict(cost_model, test_2, type = "prob")
-# 
-# # Extract probabilities of positive class
-# # pred_model_2 <- pred_model_2_prob[, "1"]
-# # pred_cost_model <- pred_cost_model_prob[, "1"]
-# 
-# # Convert actual labels to numeric format (0 for negative class, 1 for positive class)
-# actual <- as.numeric(test_2$OUTCOME1 == "1")
-# 
-# # Calculate performance metrics (TPR and FPR) for model_2 and cost_model
-# perf_2 <- performance(prediction(pred_model_2, actual), "tpr", "fpr")
-# # perf_cost <- performance(prediction(pred_cost_model, actual), "tpr", "fpr")
-# 
-# # # Create prediction objects for model_2 and cost_model
-# # pred_obj_model_2 <- prediction(pred_model_2[,2], as.numeric(test_2$OUTCOME1 == "1"))
-# # pred_obj_cost_model <- prediction(pred_cost_model[,2], as.numeric(test_2$OUTCOME1 == "1"))
-# # 
-# # # Get performance data for model_2 and cost_model
-# # perf_model_2 <- performance(pred_obj_model_2, "tpr", "fpr")
-# # perf_cost_model <- performance(pred_obj_cost_model, "tpr", "fpr")
-# 
-# roc_stacked <- perf_2
-# # roc_cost <- perf_cost
 
 
 # Plot ROC curves
@@ -250,12 +217,6 @@ plot(roc_ann, col = "green", add = TRUE)
 plot(roc_dt, col = "orange", add = TRUE)
 plot(roc_rf, col = "purple", add = TRUE)
 plot(roc_svm, col = "brown", add = TRUE)
-
-# plot(roc_stacked, col = "magenta", add = TRUE)
-# plot(roc_cost, col = "maroon", add = TRUE)
-
-# lines(roc_stacked, col = "magenta")  # Plot ROC curve for stacked model
-# lines(roc_cost, col = "maroon")  # Plot ROC curve for stacked cost model
 
 # Add legend
 legend("bottomright", legend = c("LR", "KNN", "ANN", "DT", "RF", "SVM"), col = c("blue", "red", "green", "orange", "purple", "brown"), lty = 1)

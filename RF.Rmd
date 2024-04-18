@@ -68,3 +68,11 @@ append_row(rf_kappa["Kappa"], rf_profit, "RF")
 rf_profit
 rf_kappa
 ```
+
+## Prediction with Probability for roc curve
+```{r, cache=TRUE}
+rfPred_prob <- predict(rfModel, rf_test, type = "prob")
+summary(rfPred_prob)
+write.csv(rfPred_prob, "rf_pred_prob.csv", row.names = FALSE)
+```
+

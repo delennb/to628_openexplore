@@ -58,3 +58,10 @@ append_row(dt_kappa["Kappa"], dt_profit, "DT")
 dt_profit
 dt_kappa
 ```
+
+## Prediction with Probability for roc curve
+```{r, cache=TRUE}
+dt_pred_prob <- predict(dtmodel, carinsurance_test_dt, type = "prob")
+summary(dt_pred_prob)
+write.csv(dt_pred_prob, "dt_pred_prob.csv", row.names = FALSE)
+```

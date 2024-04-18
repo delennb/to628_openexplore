@@ -15,6 +15,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(C50)
 library(caret)
+library(pROC)
+library(ggplot2)
+library(ROCR)
 source("addrow.R")
 
 lr <- read.csv("lr_pred.csv")
@@ -140,6 +143,85 @@ modeldata <- data.frame(
 
 modeldata
 ```
+
+## Bar Chart
+```{r, cache=TRUE}
+# Set the order of levels in the Model variable
+modeldata$Model <- factor(modeldata$Model, levels = c("LR", "KNN", "ANN", "DT", "RF", "SVM", "Stacked", "StackedCost"))
+
+# Filter out the stacked and stacked cost models from the data
+stacked_data <- subset(modeldata, Model %in% c("Stacked", "StackedCost"))
+
+# Filter out the other models excluding stacked and stacked cost
+other_models_data <- subset(modeldata, !(Model %in% c("Stacked", "StackedCost")))
+  
+profit_chart <- ggplot() +
+  geom_bar(data = other_models_data, aes(x = Model, y = Profit, fill = "First Level"), stat = "identity") +
+  geom_bar(data = stacked_data, aes(x = Model, y = Profit, fill = "Second Level"), stat = "identity") +
+  geom_blank(aes(fill = "Second Level")) +  # Add blank layer for legend entry
+  geom_blank(aes(fill = "First Level")) +   # Add blank layer for legend entry
+  labs(y = "Profit", title = "Profit by Model") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c("First Level" = "blue", "Second Level" = "red"), guide = guide_legend(title = "Model Type")) +
+  scale_y_continuous(labels = scales::comma)
+  
+
+# Create a bar chart for Kappa
+kappa_chart <- ggplot() +
+  geom_bar(data = other_models_data, aes(x = Model, y = Kappa, fill = "First Level"), stat = "identity") +
+  geom_bar(data = stacked_data, aes(x = Model, y = Kappa, fill = "Second Level"), stat = "identity") +
+  geom_blank(aes(fill = "Second Level")) +  # Add blank layer for legend entry
+  geom_blank(aes(fill = "First Level")) +   # Add blank layer for legend entry
+  labs(y = "Kappa", title = "Kappa by Model") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c("First Level" = "blue", "Second Level" = "red"), guide = guide_legend(title = "Model Type"))
+  
+# Show the bar charts
+print(profit_chart)
+print(kappa_chart)
+```
+
+
+## ROC Curves for First-Level Models
+```{r, cache=TRUE}
+# Calculate ROC curve for LR model
+roc_lr <- roc(carinsurance_test$OUTCOME1, lr$x)
+
+# Calculate ROC curve for KNN model
+roc_knn <- roc(carinsurance_test$OUTCOME1, knn$x)
+
+# Calculate ROC curve for ANN model
+roc_ann <- roc(carinsurance_test$OUTCOME1, ann$V1)
+
+# Calculate ROC curve for DT model
+dt_prob <- read.csv("dt_pred_prob.csv")
+# roc_dt <- roc(carinsurance_test$OUTCOME1, dt$x)
+roc_dt <- roc(carinsurance_test$OUTCOME1, dt_prob$X1)
+
+# Calculate ROC curve for RF model
+rf_prob <- read.csv("rf_pred_prob.csv")
+# roc_rf <- roc(carinsurance_test$OUTCOME1, rf_prob$X1)
+# positive_class_prob <- rf_prob[, "1"]
+roc_rf <- roc(carinsurance_test$OUTCOME1, rf_prob$X1)
+
+# Calculate ROC curve for SVM model
+roc_svm <- roc(carinsurance_test$OUTCOME1, svm$V1)
+
+
+# Plot ROC curves
+plot(roc_lr, col = "blue", main = "ROC Curve", xlab = "False Positive Rate", ylab = "True Positive Rate", print.thres = TRUE)
+plot(roc_knn, col = "red", add = TRUE)
+plot(roc_ann, col = "green", add = TRUE)
+plot(roc_dt, col = "orange", add = TRUE)
+plot(roc_rf, col = "purple", add = TRUE)
+plot(roc_svm, col = "brown", add = TRUE)
+
+# Add legend
+legend("bottomright", legend = c("LR", "KNN", "ANN", "DT", "RF", "SVM"), col = c("blue", "red", "green", "orange", "purple", "brown"), lty = 1)
+```
+
 
 ## Savings
 ```{r}
