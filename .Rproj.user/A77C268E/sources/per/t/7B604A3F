@@ -3,7 +3,7 @@
     "path": "C:/DelennFiles/W24/TO628/FinalProject/DataLoadAndClean.Rmd",
     "project_path": "DataLoadAndClean.Rmd",
     "type": "r_markdown",
-    "hash": "0",
+    "hash": "1831516514",
     "contents": "",
     "dirty": false,
     "created": 1713377056291.0,
@@ -12,9 +12,9 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "50,0",
-        "scrollLine": "64",
-        "last_setup_crc32": "27223176bb338d19"
+        "cursorPosition": "74,15",
+        "scrollLine": "48",
+        "last_setup_crc32": ""
     },
     "folds": "",
     "lastKnownWriteTime": 1712735582,

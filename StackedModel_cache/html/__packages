@@ -2,3 +2,5 @@ C50
 ggplot2
 lattice
 caret
+pROC
+ROCR
