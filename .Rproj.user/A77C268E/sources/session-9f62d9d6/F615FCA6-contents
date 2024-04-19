@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### Team: Neural Networkers
 ### Topic: Car Insurance Claims
+### Github Repository: https://github.com/delennb/to628_openexplore.git
 
 ## Problem
 
